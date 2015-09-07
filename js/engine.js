@@ -80,7 +80,21 @@ var Engine = (function(global) {
      */
     function update(dt) {
         updateEntities(dt);
-        // checkCollisions();
+        checkCollisions();
+    }
+
+    function checkCollisions() {
+        allEnemies.forEach(function (enemy) {
+            var playerCoords = player.getCenterCoords();
+            var enemyCoords = enemy.getCenterCoords();
+            var centersDistance = Math.sqrt(
+                Math.pow((playerCoords[0] - enemyCoords[0]), 2) +
+                Math.pow((playerCoords[1] - enemyCoords[1]), 2));
+            var doubleCircleRadius = 78;
+            if (centersDistance < doubleCircleRadius) {
+                player.reset();
+            }
+        });
     }
 
     /* This is called by the update function  and loops through all of the

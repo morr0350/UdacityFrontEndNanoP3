@@ -1,9 +1,29 @@
+var Game = function() {
+    this.score = 0;
+    this.winningScore = 20;
+    this.attempts = 0;
+    this.losingAttempts = 20;
+    this.rows = [];
+    for (var i = 0; i < 6; i++) {
+        this.rows[i] = (83 * i) - 22;
+    }
+}
+
+Game.prototype.displayScore = function() {
+    ctx.font = "20px Georgia";
+    ctx.clearRect(400, 50, -20, -50);
+    ctx.fillText("Score: " + this.score, 400, 50);
+};
+
+
 // Superclass for all characters in the game
 var Character = function(startX, startY, sprite) {
     this.x = startX;
     this.y = startY;
+    this.startX = startX;
+    this.startY = startY;
     this.sprite = sprite;
-}
+};
 
 // Draw the character on the screen, required method for game
 Character.prototype.render = function() {
@@ -16,13 +36,20 @@ Character.prototype.update = function(dt) {
 
 }
 
+Character.prototype.getCenterCoords = function() {
+    var centerX = this.x + (101 / 2)
+    var centerY = this.y + 106;
+    return [centerX, centerY];
+}
+
 // Enemies our player must avoid
-var Enemy = function(row) {
+var Enemy = function(row, speed) {
     // Variables applied to each of our instances go here,
     // we've provided one for you to get started
-    var initialX = -1 * (505 / 5);
-    var initialY = ((90 * row) - 45);
+    var initialX = -101 + (Math.floor(Math.random() * 20));
+    var initialY = row;
     var imageSpritePath = 'images/enemy-bug.png';
+    this.speed = speed;
 
     Character.call(this, initialX, initialY, imageSpritePath);
     // The image/sprite for our enemies, this uses
@@ -41,7 +68,7 @@ Enemy.prototype.update = function(dt) {
     if (this.x >= 505) {
         this.x = -1 * (505 / 5);
     } else {
-        this.x += 20 * dt;
+        this.x += this.speed * dt;
     }
 };
 
@@ -51,11 +78,9 @@ Enemy.prototype.update = function(dt) {
 var Player = function() {
     // Variables applied to each of our instances go here,
     // we've provided one for you to get started
-    var initialX = 2 * (505 / 5);
-    var initialY = 4 * (606 / 6);
     var imageSpritePath = 'images/char-boy.png';
 
-    Character.call(this, initialX, initialY, imageSpritePath);
+    Character.call(this, playerInitialX, playerInitialY, imageSpritePath);
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
 };
@@ -63,44 +88,74 @@ var Player = function() {
 Player.prototype = Object.create(Character.prototype);
 Player.prototype.constructor = Player;
 
-// Update the player's position, required method for game
-// Parameter: dt, a time delta between ticks
-Player.prototype.update = function(dt) {
-    // You should multiply any movement by the dt parameter
-    // which will ensure the game runs at the same speed for
-    // all computers.
-};
+Player.prototype.update = function (dt) {
+
+}
+
+// Sends player back to initial staring position
+Player.prototype.reset = function() {
+    this.x = playerInitialX;
+    this.y = playerInitialY;
+}
 
 Player.prototype.handleInput = function(direction) {
+    if (this.y < -10) {
+        ++game.score;
+        alert("Score: " + game.score);
+        game.displayScore();
+        this.reset();
+    }
     switch (direction) {
         case "left":
             this.x -= 20;
+            if (this.x < -91) {
+                this.x = 505;
+            }
             break;
         case "up":
             this.y -= 20;
             break;
         case "right":
             this.x += 20;
+            if (this.x >= 505) {
+                this.x = -1 * (91);
+            }
             break;
         case "down":
-            this.y += 20;
+            if (this.y < 424) {
+                this.y += 20;
+            }
             break;
     }
 }
 
 
 // Now instantiate your objects.
+var game = new Game();
+
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
-var enemy1 = new Enemy(1);
-var enemy2 = new Enemy(2);
-var enemy3 = new Enemy(3);
+
+var enemy1 = new Enemy(game.rows[1], 20);
+var enemy2 = new Enemy(game.rows[2], 30);
+var enemy3 = new Enemy(game.rows[3], 40);
+var enemy4 = new Enemy(game.rows[1], 45);
+var enemy5 = new Enemy(game.rows[2], 25);
+var enemy6 = new Enemy(game.rows[3], 35);
 
 var allEnemies = new Array();
+
 allEnemies.push(enemy1);
 allEnemies.push(enemy2);
 allEnemies.push(enemy3);
+allEnemies.push(enemy4);
+allEnemies.push(enemy5);
+allEnemies.push(enemy6);
 
+
+var playerInitialX = 2 * (101);
+var playerInitialY = 4 * (101);
+//alert("Choose player");
 var player = new Player();
 
 
