@@ -10,9 +10,9 @@ var Game = function() {
 }
 
 Game.prototype.displayScore = function() {
-    ctx.font = "20px Georgia";
-    ctx.clearRect(400, 50, -20, -50);
-    ctx.fillText("Score: " + this.score, 400, 50);
+    ctx.font = "20px Arial";
+    ctx.clearRect(425, 25, 100, 20);
+    ctx.fillText("Score: " + this.score, 425, 45);
 };
 
 
@@ -101,7 +101,6 @@ Player.prototype.reset = function() {
 Player.prototype.handleInput = function(direction) {
     if (this.y < -10) {
         ++game.score;
-        alert("Score: " + game.score);
         game.displayScore();
         this.reset();
     }
