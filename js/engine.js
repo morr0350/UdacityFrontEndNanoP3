@@ -85,14 +85,35 @@ var Engine = (function(global) {
 
     function checkCollisions() {
         allEnemies.forEach(function (enemy) {
-            var playerCoords = player.getCenterCoords();
-            var enemyCoords = enemy.getCenterCoords();
-            var centersDistance = Math.sqrt(
-                Math.pow((playerCoords[0] - enemyCoords[0]), 2) +
-                Math.pow((playerCoords[1] - enemyCoords[1]), 2));
-            var doubleCircleRadius = 78;
+            var playerCentroid = player.getCenterCoords();
+            var enemyCentroid = enemy.getCenterCoords();
+
+            var enemyEllipseCentroidA = [enemyCentroid[0] - 14, enemyCentroid[1]];
+            var enemyEllipseCentroidB = [enemyCentroid[0] + 14, enemyCentroid[1]];
+
+            var distanceToEllipseCentroidA = Math.sqrt(
+                Math.pow((playerCentroid[0] - enemyEllipseCentroidA[0]), 2) +
+                Math.pow((playerCentroid[1] - enemyEllipseCentroidA[1]), 2));
+
+            var distanceToEllipseCentroidB = Math.sqrt(
+                Math.pow((playerCentroid[0] - enemyEllipseCentroidB[0]), 2) +
+                Math.pow((playerCentroid[1] - enemyEllipseCentroidB[1]), 2));
+
+            // Choose closest ellipse center
+            var centersDistance = distanceToEllipseCentroidA < distanceToEllipseCentroidB ?
+                distanceToEllipseCentroidA : distanceToEllipseCentroidB;
+
+            var doubleCircleRadius = 60;
             if (centersDistance < doubleCircleRadius) {
                 player.reset();
+                alert("You got run over by a bug!  Lose 1 point.");
+                game.score--;
+                game.displayScore();
+                enemy.speed += 30;
+                if (game.score < 0) {
+                    game.displayWarning();
+                    game.score = 0;
+                }
             }
         });
     }

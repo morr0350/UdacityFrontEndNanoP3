@@ -1,8 +1,6 @@
 var Game = function() {
     this.score = 0;
-    this.winningScore = 20;
-    this.attempts = 0;
-    this.losingAttempts = 20;
+    this.winningScore = 10;
     this.rows = [];
     for (var i = 0; i < 6; i++) {
         this.rows[i] = (83 * i) - 22;
@@ -15,13 +13,17 @@ Game.prototype.displayScore = function() {
     ctx.fillText("Score: " + this.score, 425, 45);
 };
 
+Game.prototype.displayWarning = function() {
+    ctx.font = "20px Arial";
+    ctx.clearRect(425, 25, 100, 20);
+    ctx.fillText("C'MON!", 425, 45);
+};
+
 
 // Superclass for all characters in the game
 var Character = function(startX, startY, sprite) {
     this.x = startX;
     this.y = startY;
-    this.startX = startX;
-    this.startY = startY;
     this.sprite = sprite;
 };
 
@@ -43,11 +45,9 @@ Character.prototype.getCenterCoords = function() {
 }
 
 // Enemies our player must avoid
-var Enemy = function(row, speed) {
+var Enemy = function(initialX, initialY, speed) {
     // Variables applied to each of our instances go here,
     // we've provided one for you to get started
-    var initialX = -101 + (Math.floor(Math.random() * 20));
-    var initialY = row;
     var imageSpritePath = 'images/enemy-bug.png';
     this.speed = speed;
 
@@ -89,7 +89,16 @@ Player.prototype = Object.create(Character.prototype);
 Player.prototype.constructor = Player;
 
 Player.prototype.update = function (dt) {
-
+    if (this.y < -10) {
+        game.score++;
+        game.displayScore();
+        if (game.score >= game.winningScore) {
+            alert("You won!");
+            game.score = 0;
+            game.displayScore();
+        }
+        this.reset();
+    }
 }
 
 // Sends player back to initial staring position
@@ -99,25 +108,19 @@ Player.prototype.reset = function() {
 }
 
 Player.prototype.handleInput = function(direction) {
-    if (this.y < -10) {
-        ++game.score;
-        game.displayScore();
-        this.reset();
-    }
+
     switch (direction) {
         case "left":
-            this.x -= 20;
-            if (this.x < -91) {
-                this.x = 505;
+            if (this.x > 0) {
+                this.x -= 20;
             }
             break;
         case "up":
             this.y -= 20;
             break;
         case "right":
-            this.x += 20;
-            if (this.x >= 505) {
-                this.x = -1 * (91);
+            if (this.x < 405) {
+                this.x += 20;
             }
             break;
         case "down":
@@ -135,12 +138,17 @@ var game = new Game();
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
 
-var enemy1 = new Enemy(game.rows[1], 20);
-var enemy2 = new Enemy(game.rows[2], 30);
-var enemy3 = new Enemy(game.rows[3], 40);
-var enemy4 = new Enemy(game.rows[1], 45);
-var enemy5 = new Enemy(game.rows[2], 25);
-var enemy6 = new Enemy(game.rows[3], 35);
+var enemy1 = new Enemy(101, game.rows[1], 20);
+var enemy4 = new Enemy(301, game.rows[1], 20);
+var enemy8 = new Enemy(-51, game.rows[1], 20);
+
+var enemy2 = new Enemy(-100, game.rows[2], 30);
+var enemy5 = new Enemy(150, game.rows[2], 30);
+var enemy7 = new Enemy(-275, game.rows[2], 30);
+
+var enemy6 = new Enemy(-275, game.rows[3], 40);
+var enemy3 = new Enemy(-50, game.rows[3], 40);
+
 
 var allEnemies = new Array();
 
@@ -150,11 +158,13 @@ allEnemies.push(enemy3);
 allEnemies.push(enemy4);
 allEnemies.push(enemy5);
 allEnemies.push(enemy6);
+allEnemies.push(enemy7);
+allEnemies.push(enemy8);
 
 
 var playerInitialX = 2 * (101);
 var playerInitialY = 4 * (101);
-//alert("Choose player");
+
 var player = new Player();
 
 
