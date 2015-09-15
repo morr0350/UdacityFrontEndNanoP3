@@ -1,11 +1,14 @@
 var Game = function() {
+
     this.score = 0;
     this.winningScore = 10;
     this.rows = [];
+    var rowHeight = 83;
+    var rowOffset = 22;
     for (var i = 0; i < 6; i++) {
-        this.rows[i] = (83 * i) - 22;
+        this.rows[i] = (rowHeight * i) - rowOffset;
     }
-}
+};
 
 Game.prototype.displayScore = function() {
     ctx.font = "20px Arial";
@@ -36,13 +39,15 @@ Character.prototype.render = function() {
 // Parameter: dt, a time delta between ticks
 Character.prototype.update = function(dt) {
 
-}
+};
 
 Character.prototype.getCenterCoords = function() {
-    var centerX = this.x + (101 / 2)
-    var centerY = this.y + 106;
+    var avgCharacterWidth = 101;
+    var avgCharacterHeight = 212;
+    var centerX = this.x + (avgCharacterWidth / 2);
+    var centerY = this.y + (avgCharacterHeight / 2);
     return [centerX, centerY];
-}
+};
 
 // Enemies our player must avoid
 var Enemy = function(initialX, initialY, speed) {
@@ -99,7 +104,7 @@ Player.prototype.update = function (dt) {
         }
         this.reset();
     }
-}
+};
 
 // Sends player back to initial staring position
 Player.prototype.reset = function() {
@@ -129,38 +134,25 @@ Player.prototype.handleInput = function(direction) {
             }
             break;
     }
-}
+};
 
 
 // Now instantiate your objects.
 var game = new Game();
-
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
-
 var enemy1 = new Enemy(101, game.rows[1], 20);
-var enemy4 = new Enemy(301, game.rows[1], 20);
-var enemy8 = new Enemy(-51, game.rows[1], 20);
+var enemy2 = new Enemy(301, game.rows[1], 20);
+var enemy3 = new Enemy(-51, game.rows[1], 20);
 
-var enemy2 = new Enemy(-100, game.rows[2], 30);
+var enemy4 = new Enemy(-100, game.rows[2], 30);
 var enemy5 = new Enemy(150, game.rows[2], 30);
-var enemy7 = new Enemy(-275, game.rows[2], 30);
+var enemy6 = new Enemy(-275, game.rows[2], 30);
 
-var enemy6 = new Enemy(-275, game.rows[3], 40);
-var enemy3 = new Enemy(-50, game.rows[3], 40);
+var enemy7 = new Enemy(-275, game.rows[3], 40);
+var enemy8 = new Enemy(-50, game.rows[3], 40);
 
-
-var allEnemies = new Array();
-
-allEnemies.push(enemy1);
-allEnemies.push(enemy2);
-allEnemies.push(enemy3);
-allEnemies.push(enemy4);
-allEnemies.push(enemy5);
-allEnemies.push(enemy6);
-allEnemies.push(enemy7);
-allEnemies.push(enemy8);
-
+var allEnemies = [enemy1, enemy2, enemy3, enemy4, enemy5, enemy6, enemy7, enemy8];
 
 var playerInitialX = 2 * (101);
 var playerInitialY = 4 * (101);
